@@ -40,7 +40,7 @@ func WriteRedis() {
 	defer conn.Close()
 }
 
-//往redis写入数据
+//从redis读出数据
 func ReadRedis(arr []string) {
 
 	conn, err := redis.Dial("tcp", "192.168.200.129:6379")
