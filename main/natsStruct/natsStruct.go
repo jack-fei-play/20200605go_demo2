@@ -7,7 +7,7 @@ type NatsStruct struct {
 	Tag      string  //'标签信息'
 	DataId   string  //'dataId'
 	TagId    int     //'tagId'
-	Value    float64 //'该条数据上传的值'
+	Value    float32 //'该条数据上传的值'
 }
 type NatsMsg struct {
 	ThisTime uint64        `json:"this_time"`
@@ -17,5 +17,5 @@ type NatsMsg struct {
 }
 type NatsMsgData struct {
 	TagId string  `json:"tag_id"`
-	Value float64 `json:"data_id"`
+	Value float32 `json:"data_id"`
 }

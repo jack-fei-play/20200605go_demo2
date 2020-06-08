@@ -8,7 +8,6 @@ import (
 	"gopkg.in/ini.v1"
 	"log"
 	"math/rand"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -34,18 +33,30 @@ func InsertSql(natsStruct natsStruct.NatsStruct) {
 		return
 	}
 	fmt.Println("connnect success")
-	number := randomNumber()
-	id := strconv.Itoa(number)
-	dataId := natsStruct.DataId
-	tagId := strconv.Itoa(natsStruct.TagId)
-	value := strconv.FormatFloat(natsStruct.Value, 'E', -1, 32)
-	thisTime := strconv.Itoa(int(natsStruct.ThisTime))
-	deviceId := strconv.Itoa(int(natsStruct.DeviceId))
-
-	sql := "insert into `ff-nats-demo` values (" + id + "," + thisTime + ",\"" + deviceId + "\"," + "\"" + natsStruct.Tag + "\"," + dataId + "," + tagId + "," + value + ")"
-	result, err := DB.Exec(sql)
+	//没使用预编译sql对象，可能引发sql注入
+	//number := randomNumber()
+	//id := strconv.Itoa(number)
+	//dataId:= natsStruct.DataId
+	//tagId:= strconv.Itoa(natsStruct.TagId)
+	//value:= strconv.FormatFloat(float64(natsStruct.Value), 'E', -1, 32)
+	//thisTime:= strconv.Itoa(int(natsStruct.ThisTime))
+	//deviceId:= strconv.Itoa(int(natsStruct.DeviceId))
+	//sql := "insert into `ff-nats-demo` values ("+id+","+thisTime+",\""+deviceId+"\","+"\""+natsStruct.Tag+"\","+dataId+","+tagId+","+value+")"
+	//result, err := DB.Exec(sql)
+	//if err != nil {
+	//	fmt.Println("sql执行出错！",err)
+	//}
+	//DB.Close()
+	//fmt.Println("%T", result)
+	//fmt.Println("insert end")
+	sql := "insert into `ff-nats-demo` values (?,?,?,?,?,?,?)"
+	stmt, err := DB.Prepare(sql)
 	if err != nil {
-		fmt.Println("sql执行出错！", err)
+		fmt.Println(err)
+	}
+	result, err := stmt.Exec(randomNumber(), natsStruct.ThisTime, natsStruct.DeviceId, natsStruct.Tag, natsStruct.DataId, natsStruct.TagId, natsStruct.Value)
+	if err != nil {
+		fmt.Println(err)
 	}
 	DB.Close()
 	fmt.Println("%T", result)
@@ -80,6 +91,6 @@ func getErr(msg string, err error) {
 //randomNumber
 func randomNumber() int {
 	rand.Seed(time.Now().Unix())
-	rnd := rand.Intn(1000)
+	rnd := rand.Intn(100)
 	return rnd
 }

@@ -62,11 +62,6 @@ func ReadRedis(id string) string {
 	s2 := do.([]byte)
 	redisDataId := string(s2[:])
 	return redisDataId
-	//var redisStruct RedisStruct
-	//redisStruct.data_id =s3
-	//fmt.Println("redis read success!")
-	//defer conn.Close()
-	//return redisStruct
 }
 
 //s2 := do.([]byte)
