@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/nats-io/go-nats"
+
+	"log"
 
 	"strings"
 )
@@ -13,20 +16,19 @@ import (
 const (
 	userName = "root"
 	password = "123456"
-	ip       = "192.168.200.129"
+	ip       = "192.168.1.124"
 	port     = "3306"
 	dbName   = "docker"
 )
 
 func main() {
 	//测试go中连接mysql
-	testMysqlConn()
+	//testMysqlConn()
 	//测试go中连接redis
 	//testRedisConn()
 
 	//测试go使用nats
-	//testNats()
-	//fmt.Println(111)
+	testNats()
 
 }
 
@@ -40,14 +42,14 @@ func main() {
 //
 //}
 
-//func testNats () {
-//	nc, err := nats.Connect(nats.DefaultURL)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	defer nc.Close()
-//
-//}
+func testNats() {
+	nc, err := nats.Connect(nats.DefaultURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer nc.Close()
+
+}
 
 func testRedisConn() {
 
@@ -91,7 +93,7 @@ func testMysqlConn() {
 		return
 	}
 	fmt.Println("connnect success")
-	sql := "insert into student (id,name) values (2,\"zsd\")"
+	sql := "insert into student (id,name) values (4,\"zsd\")"
 	result, err := DB.Exec(sql)
 	if err != nil {
 		fmt.Println("sql执行出错！")

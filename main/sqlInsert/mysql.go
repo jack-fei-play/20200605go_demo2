@@ -1,23 +1,19 @@
 package sqlInsert
 
 import (
+	"../natsStruct"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/ini.v1"
 	"log"
+	"math/rand"
+	"strconv"
 	"strings"
+	"time"
 )
 
-//const (
-//	host string =""
-//	port string =""
-//	username string =""
-//	password string =""
-//	database string =""
-//)
-
-func InsertSql() {
+func InsertSql(natsStruct natsStruct.NatsStruct) {
 	//读取ini文件
 	host, port, username, password, database := readIni()
 	//构建连接："用户名:密码@tcp(IP:端口)/数据库?charset=utf8"
@@ -38,13 +34,22 @@ func InsertSql() {
 		return
 	}
 	fmt.Println("connnect success")
-	sql := "insert into student (id,name) values (5,\"zsd\")"
+	number := randomNumber()
+	id := strconv.Itoa(number)
+	dataId := natsStruct.DataId
+	tagId := strconv.Itoa(natsStruct.TagId)
+	value := strconv.FormatFloat(natsStruct.Value, 'E', -1, 32)
+	thisTime := strconv.Itoa(int(natsStruct.ThisTime))
+	deviceId := strconv.Itoa(int(natsStruct.DeviceId))
+
+	sql := "insert into `ff-nats-demo` values (" + id + "," + thisTime + ",\"" + deviceId + "\"," + "\"" + natsStruct.Tag + "\"," + dataId + "," + tagId + "," + value + ")"
 	result, err := DB.Exec(sql)
 	if err != nil {
-		fmt.Println("sql执行出错！")
+		fmt.Println("sql执行出错！", err)
 	}
 	DB.Close()
 	fmt.Println("%T", result)
+	fmt.Println("insert end")
 
 }
 func readIni() (host string, port string, username string, password string, database string) {
@@ -70,4 +75,11 @@ func getErr(msg string, err error) {
 	if err != nil {
 		log.Printf("%v err->%v\n", msg, err)
 	}
+}
+
+//randomNumber
+func randomNumber() int {
+	rand.Seed(time.Now().Unix())
+	rnd := rand.Intn(1000)
+	return rnd
 }
