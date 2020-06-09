@@ -27,6 +27,10 @@ func main() {
 			return
 		}
 		natsStructArr := FindRedisData(msg.Data)
+		if natsStructArr == nil {
+			fmt.Println("redis read data fail")
+		}
+
 		//向mysql插入数据
 		sqlInsert.InsertSql(natsStructArr)
 		fmt.Println("nats insert mysql success!")
@@ -47,6 +51,9 @@ func FindRedisData(msg []byte) []natsStruct.NatsStruct {
 	for _, natsMsgStruct := range sendMsg.Datas {
 		//通过natsMsgStruct.TagId获取redis中数据
 		redisDataId := coonRedis.ReadRedis(natsMsgStruct.TagId)
+		if redisDataId == "" {
+			return nil
+		}
 		//向mysql中插入对象封装NatsStruct
 		var natsStruct natsStruct.NatsStruct
 		natsStruct.ThisTime = sendMsg.ThisTime

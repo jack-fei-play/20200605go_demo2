@@ -11,6 +11,7 @@ const (
 	password = 123456
 )
 
+//redis中消息的存储结构体
 type RedisStruct struct {
 	data_id string
 }
