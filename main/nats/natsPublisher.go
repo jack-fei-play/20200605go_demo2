@@ -17,7 +17,7 @@ func main() {
 	}
 	defer natsConnection.Close()
 	fmt.Println("connected to " + nats.DefaultURL)
-	//sendMsg
+	//sendMsg对象信息封装
 	var sendMsg natsStruct.NatsMsg
 	sendMsg.DeviceId = 897979799
 	sendMsg.Tag = "dtu0000001"
@@ -38,6 +38,7 @@ func main() {
 	}
 	sendJson, err := json.Marshal(sendMsg)
 	subject := "ff/nats/demo"
+	//nats发送消息
 	natsConnection.Publish(subject, sendJson)
 	fmt.Printf("published message on subject " + subject)
 	s := string(sendJson)

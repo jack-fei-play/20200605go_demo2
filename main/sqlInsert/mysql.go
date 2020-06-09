@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func InsertSql(natsStruct natsStruct.NatsStruct) {
+func InsertSql(natsStructArr []natsStruct.NatsStruct) {
 	//读取ini文件
 	host, port, username, password, database := readIni()
 	//构建连接："用户名:密码@tcp(IP:端口)/数据库?charset=utf8"
@@ -54,21 +54,24 @@ func InsertSql(natsStruct natsStruct.NatsStruct) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	result, err := stmt.Exec(randomNumber(), natsStruct.ThisTime, natsStruct.DeviceId, natsStruct.Tag, natsStruct.DataId, natsStruct.TagId, natsStruct.Value)
-	if err != nil {
-		fmt.Println(err)
+	for _, natsStruct := range natsStructArr {
+		result, err := stmt.Exec(randomNumber(), natsStruct.ThisTime, natsStruct.DeviceId, natsStruct.Tag, natsStruct.DataId, natsStruct.TagId, natsStruct.Value)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("%T", result)
+		fmt.Println("insert 1 sql end!")
 	}
-	DB.Close()
-	fmt.Println("%T", result)
-	fmt.Println("insert end")
+	//result, err := stmt.Exec(randomNumber(), natsStruct.ThisTime, natsStruct.DeviceId, natsStruct.Tag, natsStruct.DataId, natsStruct.TagId, natsStruct.Value)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	defer DB.Close()
 
 }
 func readIni() (host string, port string, username string, password string, database string) {
 	//读取ini文件
 	cfg, err := ini.Load("config.ini")
-	//if err != nil {
-	//	fmt.Println("load config.ini fail,",err)
-	//}
 	getErr("load config", err)
 	// 获取mysql分区的key
 	fmt.Println(cfg.Section("mysql").Key("host").String()) // 将结果转为string
@@ -90,7 +93,7 @@ func getErr(msg string, err error) {
 
 //randomNumber
 func randomNumber() int {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().UnixNano())
 	rnd := rand.Intn(100)
 	return rnd
 }
